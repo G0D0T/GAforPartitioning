@@ -1,3 +1,21 @@
+def extract_data(content):
+    lista = []
+    out = []
+    for i, c in enumerate(content):
+        elem = []
+        lista.append(c.split('], '))
+        first = lista[i][0][2:]
+        temp = [int(n) for n in first.split(', ')]
+        elem.append(temp)
+        second = lista[i][1][1:]
+        temp = [int(n) for n in second.split(', ')]
+        elem.append(temp)
+        third = lista[i][2][:-1]
+        elem.append(int(third))
+        out.append(elem)
+    return out
+
+
 def find_part(s):
     n = len(s)
     k = sum(s)
@@ -32,31 +50,25 @@ def main():
     with open(filename) as f:
         content = f.readlines()
     content = [x.strip() for x in content]
+    out = extract_data(content)
 
-    lista = []
-    out = []
-    for i, c in enumerate(content):
-        elem = []
-        lista.append(c.split('], '))
-        first = lista[i][0][2:]
-        temp = [int(n) for n in first.split(', ')]
-        elem.append(temp)
-        second = lista[i][1][1:]
-        temp = [int(n) for n in second.split(', ')]
-        elem.append(temp)
-        third = lista[i][2][:-1]
-        elem.append(int(third))
-        out.append(elem)
-
+    success = 0
     for s in range(len(out)):
         if find_part(out[s][0]):
             print('Sottoinsiemi ottimi.')
+            if not out[s][2]:
+                success += 1
         else:
             print('Non ottimi...')
+            if out[s][2]:
+                success += 1
         if out[s][2]:
             print('Non ottimi GA.\n')
         else:
             print('Sottoinsiemi ottimi GA!\n')
+
+    success /= len(out)
+    print("Il GA ha trovato la soluzione esatta nel", success, "dei", len(out), "casi.")
 
 
 main()
