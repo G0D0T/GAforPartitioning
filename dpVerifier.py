@@ -1,3 +1,4 @@
+# Funzione per inserire in una lista quanto scritto nel file delle soluzioni generato da ga.py
 def extract_data(content):
     lista = []
     out = []
@@ -16,6 +17,8 @@ def extract_data(content):
     return out
 
 
+# Funzione che sfrutta la programmazione dinamica per riempire una tabella in modo bottom-up
+# Per la risoluzione in tempo pseudopolinomiale del Number Partitioning problem
 def find_part(s):
     n = len(s)
     k = sum(s)
@@ -46,12 +49,14 @@ def main():
     # s = [98, 36, 21, 63, 77, 1, 25, 89, 88, 47, 10, 11, 77, 14, 17, 64, 44, 1, 55, 86] #ott
     # s = [33, 80, 1, 60, 25, 95, 19, 10, 66, 29, 21, 23, 58, 53, 55, 13, 27, 89, 99, 83] #not
     # print(s)
+    # Leggo il file con le soluzioni generate da ga.py
     filename = 'solutions.txt'
     with open(filename) as f:
         content = f.readlines()
     content = [x.strip() for x in content]
     out = extract_data(content)
 
+    # Controllo accuratezza
     success = 0
     for s in range(len(out)):
         if find_part(out[s][0]):
