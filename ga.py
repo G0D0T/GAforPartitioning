@@ -46,30 +46,31 @@ def mutate(g1, dim):
     return g1
 
 
-def main(problem, numbers, real_size, xover, mutation, generations):
+# Funzione base dell'algoritmo genetico
+def ga(problem, numbers, real_size, xover, mutation, generations):
     # Controllo che la grandezza della popolazione sia pari (per avere tutte coppie)
-    sum_numbers = sum(numbers)
     size = real_size + real_size % 2
     population = gen_population(size, len(numbers))
-    
+    sum_numbers = sum(numbers)
+
     # Ciclo fino al numero di generazioni dato in input
     for i in range(1, generations + 1):
         print('Generazione: ', i)
         j = 0
         # Lista che raccoglie i risultati della funzione costo
         scores = []
-        # Ciclo per ogni coppia della popolazione
-        while j <= size - 2:            
+        # SELECTION: Ciclo per ogni coppia della popolazione
+        while j <= size - 2:
             # print(population[j])
             # print(population[j+1])
-            # Genero un numero casuale che determina se la coppia avrà figli (probabilità alta)
+            # CROSSOVER: Genero un numero casuale che determina se la coppia avrà figli (probabilità alta)
             mating = random.random()
             if mating > xover:
                 # Genero un secondo numero random per il punto del crossover
                 point = random.randrange(0, size)
                 figlio1, figlio2 = crossover(population[j], population[j+1], point)
 
-                # Nuovamente genero un numero per eventuali mutazioni di uno o più figli (probabilità bassa)
+                # MUTATION: Nuovamente genero un numero per eventuali mutazioni di uno o più figli (probabilità bassa)
                 evolution1 = random.random()
                 evolution2 = random.random()
                 if evolution1 > mutation:
@@ -83,7 +84,7 @@ def main(problem, numbers, real_size, xover, mutation, generations):
                 oldscore2 = problem(population[j+1], numbers)
                 newscore2 = problem(figlio2, numbers)
 
-                # Controllo chi ha il valore minore (genitore o figlio) e lo inserisco in lista per la prossima generazione
+                # REPLACE: Controllo chi ha il valore minore (genitore o figlio) e lo inserisco in lista per la prossima generazione
                 if newscore1 < oldscore1:
                     population[j] = figlio1
                     scores.append(newscore1)
@@ -98,17 +99,17 @@ def main(problem, numbers, real_size, xover, mutation, generations):
             else:
                 scores.append(problem(population[j], numbers))
                 scores.append(problem(population[j+1], numbers))
-            j += 2        
-            
+            j += 2
+
         print(scores)
-        # Calcolo varie statistiche e stampo su terminale
+        # Calcolo varie statistiche sulla fitness e stampo su terminale
         gen_avg = sum(scores) / size
         gen_best = min(scores)
         gen_sol = population[scores.index(min(scores))]
         print('> GENERATION AVERAGE:', gen_avg)
         print('> GENERATION BEST:', gen_best)
         print('> BEST SOLUTION:', gen_sol, '\n')
-        
+
         # controllo se ho trovato la soluzione ottima: smetto di far evolvere la popolazione
         if gen_best == sum_numbers % 2:
             break
@@ -116,21 +117,28 @@ def main(problem, numbers, real_size, xover, mutation, generations):
     return gen_sol, gen_best
 
 
-# Parametri per l'algoritmo genetico GA
-problem = partition
-dimensione = 25
-# y = [1, 2, 3, 4, 4, 3, 2, 1, 1, 1]
-y = []
-for i in range(dimensione):
-    y.append(random.randrange(1, 100))
-size = 10
-xover = 0.1
-mutation = 0.9
-generazioni = 20
+def main():
+    # Parametri per l'algoritmo genetico GA
+    problem = partition
+    dimensione = 50
+    y = []
+    for i in range(dimensione):
+        y.append(random.randrange(1, 100))
+    size = 30
+    xover = 0.25
+    mutation = 0.9
+    generazioni = 100
 
-soluzione, valore = main(problem, y, size, xover, mutation, generazioni)
-print(y)
-sol = (y, soluzione, valore)
-# Stampo su file per controllo
-with open('solutions.txt', 'a') as f:
-    f.write(str(sol)+'\n')
+    soluzione, valore = ga(problem, y, size, xover, mutation, generazioni)
+    print(y)
+    sol = (y, soluzione, valore)
+
+    # Stampo su file per controllo
+    with open('solutions.txt', 'a') as f:
+        f.write(str(sol)+'\n')
+
+
+ripeti = 100
+while ripeti:
+    main()
+    ripeti -= 1
